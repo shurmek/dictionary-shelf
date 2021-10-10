@@ -17,7 +17,9 @@ export enum dictionaryActionTypes {
   /** Dictionary search */
   DICTIONARY_SEARCH = 'dictionary/search',
   /** Dictionary remove */
-  DICTIONARY_REMOVE = 'dictionary/remove'
+  DICTIONARY_REMOVE = 'dictionary/remove',
+  /**Dictionary clear */
+  DICTIONARY_CLEAR = 'dictionary/clear'
 };
 
 /** Dictionary fetch action interface */
@@ -45,10 +47,14 @@ export interface DICTIONARY_REMOVE_ACTION
   payload: DictionaryInterface
 };
 
+/** Dictionary clear action interface */
+export interface DICTIONARY_CLEAR_ACTION
+  extends Action<dictionaryActionTypes.DICTIONARY_CLEAR> { };
+
 /** Dictionary action overloaded type */
 export type DictionaryAction = DICTIONARY_FETCH_ACTION |
   DICTIONARY_ADD_ACTION | DICTIONARY_SEARCH_ACTION |
-  DICTIONARY_REMOVE_ACTION;
+  DICTIONARY_REMOVE_ACTION | DICTIONARY_CLEAR_ACTION;
 
 /** Dictionary state type */
 type DictionaryState = DictionaryInterface[];
@@ -68,6 +74,8 @@ export const dictionaryReducer: Reducer<DictionaryState, DictionaryAction> =
         return [action.payload, ...state];
       case dictionaryActionTypes.DICTIONARY_REMOVE:
         return state.splice(state.indexOf(action.payload), 1);
+      case dictionaryActionTypes.DICTIONARY_CLEAR:
+        return []
       default:
         return state
     }
