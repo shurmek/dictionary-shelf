@@ -4,7 +4,8 @@ import {
   DICTIONARY_FETCH_ACTION,
   DICTIONARY_ADD_ACTION,
   DICTIONARY_SEARCH_ACTION,
-  DICTIONARY_REMOVE_ACTION
+  DICTIONARY_REMOVE_ACTION,
+  DICTIONARY_CLEAR_ACTION
 } from '../reducers/dictionary.reducer'
 
 /** @returns dictionary fetch action*/
@@ -23,6 +24,11 @@ export const dictionaryAdd = (payload: DictionaryInterface): DICTIONARY_ADD_ACTI
 export const dictionarySearch = (payload: DictionaryInterface[]): DICTIONARY_SEARCH_ACTION => ({
   type: dictionaryActionTypes.DICTIONARY_SEARCH,
   payload
+});
+
+/** @returns dictionary clear action*/
+export const dictionaryClear = (): DICTIONARY_CLEAR_ACTION => ({
+  type: dictionaryActionTypes.DICTIONARY_CLEAR
 });
 
 /** @returns dictionary renove action*/
