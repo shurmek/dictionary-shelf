@@ -8,6 +8,14 @@ export interface DictionaryInterface {
   img: string
 };
 
+/** Dictionary state interface */
+export interface DictionaryState {
+  data: DictionaryInterface[],
+  limit: number,
+  total: number,
+  currentPage: number
+}
+
 /** Dictionary action types interface */
 export enum dictionaryActionTypes {
   /** Dictionary fetch */
@@ -25,7 +33,7 @@ export enum dictionaryActionTypes {
 /** Dictionary fetch action interface */
 export interface DICTIONARY_FETCH_ACTION
   extends Action<dictionaryActionTypes.DICTIONARY_FETCH> {
-  payload: DictionaryInterface[]
+  payload: DictionaryState
 };
 
 /** Dictionary add action interface */
@@ -37,7 +45,7 @@ export interface DICTIONARY_ADD_ACTION
 /** Dictionary search action interface */
 export interface DICTIONARY_SEARCH_ACTION
   extends Action<dictionaryActionTypes.DICTIONARY_SEARCH> {
-  payload: DictionaryInterface[]
+  payload: DictionaryState
 };
 
 /** Dictionary remove action interface */
@@ -56,26 +64,37 @@ export type DictionaryAction = DICTIONARY_FETCH_ACTION |
   DICTIONARY_ADD_ACTION | DICTIONARY_SEARCH_ACTION |
   DICTIONARY_REMOVE_ACTION | DICTIONARY_CLEAR_ACTION;
 
-/** Dictionary state type */
-type DictionaryState = DictionaryInterface[];
-
 /** Dictionary initial state */
-const initialState: DictionaryState = [];
+const initialState: DictionaryState = {
+  data: [],
+  limit: 0,
+  total: 0,
+  currentPage: 0
+};
 
 /** Dictionary reducer */
 export const dictionaryReducer: Reducer<DictionaryState, DictionaryAction> =
   (state = initialState, action) => {
     switch (action.type) {
       case dictionaryActionTypes.DICTIONARY_FETCH:
-        return state.concat(action.payload);
+        return {
+          ...state,
+          data: state.data.concat(action.payload.data)
+        }
       case dictionaryActionTypes.DICTIONARY_SEARCH:
         return action.payload;
       case dictionaryActionTypes.DICTIONARY_ADD:
-        return [action.payload, ...state];
+        return {
+          ...state,
+          data: [action.payload].concat(state.data)
+        };
       case dictionaryActionTypes.DICTIONARY_REMOVE:
-        return state.splice(state.indexOf(action.payload), 1);
+        return {
+          ...state,
+          data: state.data.splice(state.data.indexOf(action.payload), 1)
+        }
       case dictionaryActionTypes.DICTIONARY_CLEAR:
-        return []
+        return initialState
       default:
         return state
     }

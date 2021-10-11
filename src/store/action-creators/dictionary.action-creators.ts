@@ -5,11 +5,12 @@ import {
   DICTIONARY_ADD_ACTION,
   DICTIONARY_SEARCH_ACTION,
   DICTIONARY_REMOVE_ACTION,
-  DICTIONARY_CLEAR_ACTION
+  DICTIONARY_CLEAR_ACTION,
+  DictionaryState
 } from '../reducers/dictionary.reducer'
 
 /** @returns dictionary fetch action*/
-export const dictionaryFetch = (payload: DictionaryInterface[]): DICTIONARY_FETCH_ACTION => ({
+export const dictionaryFetch = (payload: DictionaryState): DICTIONARY_FETCH_ACTION => ({
   type: dictionaryActionTypes.DICTIONARY_FETCH,
   payload
 });
@@ -21,7 +22,7 @@ export const dictionaryAdd = (payload: DictionaryInterface): DICTIONARY_ADD_ACTI
 });
 
 /** @returns dictionary search action*/
-export const dictionarySearch = (payload: DictionaryInterface[]): DICTIONARY_SEARCH_ACTION => ({
+export const dictionarySearch = (payload: DictionaryState): DICTIONARY_SEARCH_ACTION => ({
   type: dictionaryActionTypes.DICTIONARY_SEARCH,
   payload
 });
