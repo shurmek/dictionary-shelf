@@ -42,7 +42,7 @@ export default function requestUtil<S>({
     url,
     method,
     data,
-    headers: data ? { ...headers, 'Content-Type': 'applicetion/json' } : headers,
+    headers: { 'Content-Type': 'application/json', ...headers },
     params,
     validateStatus: (status) => status >= 200 && status < 300
   }).then(onSuccess, onFailure);
