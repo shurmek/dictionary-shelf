@@ -44,6 +44,6 @@ export default function requestUtil<S>({
     data,
     headers: { 'Content-Type': 'application/json', ...headers },
     params,
-    validateStatus: (status) => status >= 200 && status < 300
+    validateStatus: (status) => status >= 200 && status < 400
   }).then(onSuccess, onFailure);
 }
