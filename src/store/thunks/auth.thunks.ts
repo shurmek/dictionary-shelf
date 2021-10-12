@@ -8,11 +8,14 @@ import { AuthInterface } from '../reducers/auth.reducer'
 
 const USER_STORAGE = 'uid'
 
-/** Authentication form data interface */
-export interface AuthFormDataInterface {
-  username: string,
-  password: string
+export enum AuthFormDataKeys {
+  USERNAME = "username",
+  PASSWORD = "password"
 }
+
+/** Authentication form data interface */
+export interface AuthFormDataInterface
+  extends Record<AuthFormDataKeys, string> { };
 
 /**
  * Thunk to user login
@@ -34,7 +37,7 @@ export const authLoginThunk = (data: AuthFormDataInterface) =>
         localStorage.setItem(USER_STORAGE, data.token)
         dispatch(notificationShow('Добро пожаловать!', "success"))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning"))
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning"))
     ).finally(
       () => dispatch(setLoading(false))
     )
@@ -73,7 +76,7 @@ export const authMeThunk = () =>
         localStorage.setItem(USER_STORAGE, data.token)
         dispatch(notificationShow('Добро пожаловать!', "success"))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning"))
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning"))
     ).finally(
       () => dispatch(setLoading(false))
     )

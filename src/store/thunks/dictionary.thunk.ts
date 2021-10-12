@@ -44,7 +44,7 @@ export const dictionaryFetchThunk = () =>
           total: Number(headers['x-total-count'])
         }))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning")),
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning")),
     ).finally(
       () => setLoading(false)
     )
@@ -90,7 +90,7 @@ export const dictionarySearchThunck = (searchText: string) =>
           total: Number(headers['x-total-count'])
         }))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning"))
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning"))
     ).finally(
       () => setLoading(false)
     )
@@ -119,7 +119,7 @@ export const dictionaryAddThunk = (data: Omit<DictionaryInterface, "id">) =>
         dispatch(dictionaryAdd(data))
         dispatch(notificationShow("Словарь успешно добавлен!", "success"))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning"))
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning"))
     ).finally(
       () => setLoading(false)
     )
@@ -151,6 +151,6 @@ export const dictionaryRemoveThunk = (data: DictionaryInterface) =>
         dispatch(dictionaryRemove(data))
         dispatch(notificationShow("Справочник удален!", "info"))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning"))
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning"))
     )
   }
