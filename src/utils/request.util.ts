@@ -43,8 +43,6 @@ export default function requestUtil<S>({
     method,
     data,
     headers: { 'Content-Type': 'application/json', ...headers },
-    params,
-    validateStatus: (status) => status >= 200 && status < 400
-  }).then(onSuccess, onFailure)
-  .catch((e: Error) => console.log(e));
+    params
+  }).then(onSuccess, (e: any) => onFailure(e.response))
 }

@@ -5,15 +5,15 @@ export interface DictionaryInterface {
   id: string,
   title: string,
   description: string,
-  img: string
+  img: string,
+  favorite: boolean
 };
 
 /** Dictionary state interface */
 export interface DictionaryState {
   data: DictionaryInterface[],
   limit: number,
-  total: number,
-  currentPage: number
+  total: number
 }
 
 /** Dictionary action types interface */
@@ -67,9 +67,8 @@ export type DictionaryAction = DICTIONARY_FETCH_ACTION |
 /** Dictionary initial state */
 const initialState: DictionaryState = {
   data: [],
-  limit: 0,
-  total: 0,
-  currentPage: 0
+  limit: 100,
+  total: 0
 };
 
 /** Dictionary reducer */
@@ -78,7 +77,7 @@ export const dictionaryReducer: Reducer<DictionaryState, DictionaryAction> =
     switch (action.type) {
       case dictionaryActionTypes.DICTIONARY_FETCH:
         return {
-          ...state,
+          ...action.payload,
           data: state.data.concat(action.payload.data)
         }
       case dictionaryActionTypes.DICTIONARY_SEARCH:
@@ -86,12 +85,14 @@ export const dictionaryReducer: Reducer<DictionaryState, DictionaryAction> =
       case dictionaryActionTypes.DICTIONARY_ADD:
         return {
           ...state,
+          total: state.total + 1,
           data: [action.payload].concat(state.data)
         };
       case dictionaryActionTypes.DICTIONARY_REMOVE:
+        const index = state.data.indexOf(action.payload);
         return {
           ...state,
-          data: state.data.splice(state.data.indexOf(action.payload), 1)
+          data: state.data.slice(0, index).concat(state.data.slice(index + 1))
         }
       case dictionaryActionTypes.DICTIONARY_CLEAR:
         return initialState

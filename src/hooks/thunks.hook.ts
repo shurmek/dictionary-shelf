@@ -3,7 +3,7 @@ import { useDispatch, useStore } from 'react-redux';
 import { TypedDispatch, TypedGetState } from "../store";
 
 function bindThunk(thunk: any, dispatch: TypedDispatch, getState: TypedGetState) {
-  return function (...args: any) {
+  return function (...args: any[]) {
     return dispatch(thunk.apply(args, arguments))
   }
 }
@@ -19,7 +19,7 @@ export const useThunks = () => {
   const dispatch: TypedDispatch = useDispatch()
 
   type keys = keyof typeof thunks
-  const boundThunks: Partial<Record<keyof typeof thunks, any>> = {}
+  const boundThunks: Partial<Record<keyof typeof thunks, ReturnType<typeof bindThunk>>> = {}
 
   for (let key in thunks) {
     const thunk = thunks[key as keys]

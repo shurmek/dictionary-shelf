@@ -10,9 +10,7 @@ export enum authActionTypes {
   /**user login */
   AUTH_LOGIN = 'auth/login',
   /**user logout */
-  AUTH_LOGOUT = 'auth/logout',
-  /**user authentication*/
-  AUTH_ME = 'auth/me'
+  AUTH_LOGOUT = 'auth/logout'
 };
 
 /** Authorization login action interface */
@@ -25,19 +23,19 @@ export interface AUTH_LOGIN_ACTION
 export interface AUTH_LOGOUT_ACTION
   extends Action<authActionTypes.AUTH_LOGOUT> { };
 
-/** Authentication action interface */
-export interface AUTH_ME extends Action<authActionTypes.AUTH_ME> {
-  payload: AuthInterface
-};
-
 /** Authentication action overloaded type */
-export type AuthAction = AUTH_LOGIN_ACTION | AUTH_LOGOUT_ACTION | AUTH_ME;
+export type AuthAction = AUTH_LOGIN_ACTION | AUTH_LOGOUT_ACTION;
 
 /** Authorization state type */
 type AuthState = AuthInterface | null;
 
+
+export const USER_STORAGE = 'uid'
+
+const token = localStorage.getItem(USER_STORAGE)
+
 /** Authorization initial state */
-const initialState: AuthState = null;
+const initialState: AuthState = token ? { token } : null
 
 /** Authorization reducer */
 export const authReducer: Reducer<AuthState, AuthAction> = (state = initialState, action) => {
@@ -46,8 +44,6 @@ export const authReducer: Reducer<AuthState, AuthAction> = (state = initialState
       return action.payload
     case authActionTypes.AUTH_LOGOUT:
       return null
-    case authActionTypes.AUTH_ME:
-      return action.payload
     default:
       return state
   }
