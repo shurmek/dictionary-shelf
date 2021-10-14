@@ -15,85 +15,44 @@ import { DictionaryInterface } from '../reducers/dictionary.reducer'
  * 
  * More about thunks - @see {@link[Redux](https://redux.js.org/usage/writing-logic-thunks)}
  */
-export const dictionaryFetchThunk = () =>
+export const dictionaryFetchThunk = (searchText: string, isFirstRequest?: boolean) =>
   async (dispatch: TypedDispatch, getState: TypedGetState) => {
 
     const { auth, dictionary } = getState();
-    const currentPage = ++dictionary.currentPage;
-    const limit = dictionary.limit || 100;
 
-    if (dictionary.total && currentPage > Math.ceil(dictionary.total / limit)) return
+    const limit = dictionary.limit;
+    const nextPage = isFirstRequest ? 1 : (Math.round(dictionary.data.length / limit)) + 1
+
+    console.log(!!dictionary.total, nextPage, Math.ceil(dictionary.total / limit))
+
+    if (!isFirstRequest && dictionary.data.length === dictionary.total) return
 
     dispatch(setLoading(true))
 
-    requestUtil({
-      url: '/dictionaries',
-      params: {
-        _page: String(currentPage),
-        _limit: String(limit)
-      },
-      headers: {
-        'Authentication': `Bearer ${auth?.token}`
-      }
-    })<DictionaryInterface[]>(
-      ({ data, headers }) => {
-        dispatch(dictionaryFetch({
-          data,
-          currentPage,
-          limit,
-          total: Number(headers['x-total-count'])
-        }))
-      },
-      ({ data }) => dispatch(notificationShow(data.message, "warning")),
-    ).finally(
-      () => setLoading(false)
-    )
-  }
-
-/**
- * Thunk to full text search dictionaries 
- * 
- * @param searchText text chunck serched on dictionaries
- * 
- * More about thunks - @see {@link[Redux](https://redux.js.org/usage/writing-logic-thunks)}
- */
-export const dictionarySearchThunck = (searchText: string) =>
-  async (dispatch: TypedDispatch, getState: TypedGetState) => {
-
-    if (searchText.trim() === '') {
-      dispatch(notificationShow("Поисковый запрос не может быть пустым"))
-      return
+    const baseParams = {
+      _page: String(nextPage),
+      _limit: String(limit)
     }
 
-    const { auth, dictionary } = getState();
-    const currentPage = 1;
-    const limit = dictionary.limit || 100;
-
-    dispatch(setLoading(true))
-
     requestUtil({
       url: '/dictionaries',
-      params: {
-        q: searchText,
-        _page: String(currentPage),
-        _limit: String(limit)
-      },
+      params: !!searchText?.trim() ? { 'q': searchText, ...baseParams } : baseParams,
       headers: {
-        'Authentication': `Bearer ${auth?.token}`
+        'Authorization': `Bearer ${auth?.token}`
       }
     })<DictionaryInterface[]>(
       ({ data, headers }) => {
-        dispatch(dictionarySearch({
+
+        const action = (!!searchText.trim() && isFirstRequest) ? dictionarySearch : dictionaryFetch;
+
+        dispatch(action({
           data,
-          currentPage,
           limit,
           total: Number(headers['x-total-count'])
         }))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning"))
-    ).finally(
-      () => setLoading(false)
-    )
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning")),
+    ).finally(() => dispatch(setLoading(false)))
   }
 
 /**
@@ -112,17 +71,15 @@ export const dictionaryAddThunk = (data: Omit<DictionaryInterface, "id">) =>
       method: "POST",
       data,
       headers: {
-        'Authentication': `Bearer ${auth?.token}`
+        'Authorization': `Bearer ${auth?.token}`
       }
     })<DictionaryInterface>(
       ({ data }) => {
         dispatch(dictionaryAdd(data))
         dispatch(notificationShow("Словарь успешно добавлен!", "success"))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning"))
-    ).finally(
-      () => setLoading(false)
-    )
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning"))
+    ).finally(() => dispatch(setLoading(false)))
   }
 
 /**
@@ -140,7 +97,7 @@ export const dictionaryRemoveThunk = (data: DictionaryInterface) =>
       url: `/dictionaries/${data.id}`,
       method: "DELETE",
       headers: {
-        'Authentication': `Bearer ${auth?.token}`
+        'Authorization': `Bearer ${auth?.token}`
       }
     })(
       ({ status }) => {
@@ -151,6 +108,7 @@ export const dictionaryRemoveThunk = (data: DictionaryInterface) =>
         dispatch(dictionaryRemove(data))
         dispatch(notificationShow("Справочник удален!", "info"))
       },
-      ({ data }) => dispatch(notificationShow(data.message, "warning"))
+      ({ data }) => dispatch(notificationShow(data?.message || "Что-то пошло не так", "warning"))
     )
+      .finally(() => dispatch(setLoading(false)))
   }

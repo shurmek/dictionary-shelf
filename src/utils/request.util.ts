@@ -12,7 +12,7 @@ interface RequestConfig<T> extends Pick<AxiosRequestConfig<T>, "url" | "method" 
 /** It's default response interface from server rejected request*/
 interface FailureResponse {
   status: number,
-  message: string,
+  message?: string,
 }
 
 /** Response handlers function type*/
@@ -43,7 +43,6 @@ export default function requestUtil<S>({
     method,
     data,
     headers: { 'Content-Type': 'application/json', ...headers },
-    params,
-    validateStatus: (status) => status >= 200 && status < 400
-  }).then(onSuccess, onFailure);
+    params
+  }).then(onSuccess, (e: any) => onFailure(e.response))
 }
